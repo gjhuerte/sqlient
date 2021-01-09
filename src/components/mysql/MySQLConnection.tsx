@@ -66,7 +66,7 @@ export default function MySQLConnection() {
           );
         })}
       </ul>
-      <button onClick={() => setState({ redirect: '/mysql/create-connection' })}>
+      <button onClick={() => setState({ redirect: '/' })}>
         Exit Connection
       </button>
       {state.redirect && <Redirect to={{  pathname: state.redirect, state: state.redirectParams }} />}

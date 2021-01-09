@@ -11,9 +11,6 @@ export default function App() {
         <Route path="/choose_connection">
           <ChooseConnection />
         </Route>
-        <Route path="/mysql/create-connection">
-          <CreateMySQLConnection />
-        </Route>
         <Route path="/mysql">
           <MySQLConnection />
         </Route>

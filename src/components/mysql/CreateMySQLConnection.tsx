@@ -1,22 +1,24 @@
 import React, { useState } from 'react'
-import { Redirect, useLocation } from 'react-router-dom';
-import { connection, showDatabases } from '../../services/MySQLQueryService';
+import { Redirect } from 'react-router-dom';
+import { connection } from '../../services/MySQLQueryService';
 
 export default function CreateMySQLConnection() {
   const [state, setState] = useState({
     user: 'homestead',
     password: 'secret',
     host: '192.168.10.10',
+    port: '3306',
     redirect: '',
     redirectParams: {
       errorMessage: '',
       user: '',
       password: '',
       host: '',
+      port: '',
     },
   });
 
-  function connect(e) {
+  function connect() {
 
     try {
       const _connection = connection({
@@ -30,7 +32,7 @@ export default function CreateMySQLConnection() {
           setState({
             ...state,
             redirectParams: {
-              errorMessage: 'Error connecting to server: ' + err.code,
+              errorMessage: 'Server Error: ' + err.code,
             },
           });
 
@@ -51,28 +53,30 @@ export default function CreateMySQLConnection() {
   }
 
   return (
-    <div>
-      <h3>Create Connection - MYSQL</h3>
-      {state.redirectParams.errorMessage && <p>{state.redirectParams.errorMessage}</p>}
+    <div class="">
       <div>
-        <label>Host:</label>
-        <input type="text" name="host" placeholder="Host" onChange={e => setState({ ...state, host: e.target.value })} value={state.host} />
-      </div>
-      <div>
-        <label>User:</label>
-        <input type="text" name="user" placeholder="User" onChange={e => setState({ ...state, user: e.target.value })} value={state.user} />
-      </div>
-      <div>
-        <label>Password:</label>
-        <input type="password" name="password" placeholder="Password" onChange={e => setState({ ...state, password: e.target.value })} value={state.password} />
-      </div>
-      <div>
-        <button onClick={connect}>
-          CONNECT
-        </button>
-        <button onClick={() => setState({ ...state, redirect: '/' })}>
-          EXIT
-        </button>
+        <div>
+            {state.redirectParams.errorMessage && <p class="p-2 text-sm bg-red-200 text-red-700 rounded-md my-2">{state.redirectParams.errorMessage}</p>}
+            <div class="flex flex-col mb-2">
+              <label class="font-medium text-gray-400 text-sm">HOST</label>
+              <input type="text" placeholder="127.0.0.1" class="bg-gray-200 text-gray-700 p-2 rounded-md mt-1 focus:outline-none" onChange={e => setState({ ...state, host: e.target.value })} value={state.host} />
+            </div>
+            <div class="flex flex-col mb-2">
+              <label class="font-medium text-gray-400 text-sm">PORT</label>
+              <input type="text" placeholder="3306" class="bg-gray-200 text-gray-700 p-2 rounded-md mt-1 focus:outline-none" onChange={e => setState({ ...state, port: e.target.value })} value={state.port} />
+            </div>
+            <div class="flex flex-col mb-2">
+              <label class="font-medium text-gray-400 text-sm">USER</label>
+              <input type="text" placeholder="root" class="bg-gray-200 text-gray-700 p-2 rounded-md mt-1 focus:outline-none" onChange={e => setState({ ...state, user: e.target.value })} value={state.user} />
+            </div>
+            <div class="flex flex-col mb-2">
+              <label class="font-medium text-gray-400 text-sm">PASSWORD</label>
+              <input type="password" placeholder="root" class="bg-gray-200 text-gray-700 p-2 rounded-md mt-1 focus:outline-none" onChange={e => setState({ ...state, password: e.target.value })} value={state.password} />
+            </div>
+            <button class="mt-2 p-2 rounded-md bg-blue-700 text-blue-50 hover:text-blue-200 text-md focus:outline-none" onClick={connect}>
+              CONNECT
+            </button>
+        </div>
       </div>
       {state.redirect && <Redirect to={{  pathname: state.redirect, state: state.redirectParams }} />}
     </div>
