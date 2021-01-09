@@ -5,11 +5,11 @@ import mongodbIcon from '../../app/images/mongodb.png';
 
 export default function ChooseConnection () {
   return (
-    <div className="p-10 flex w-screen h-screen">
+    <div className="p-10 flex w-screen min-h-screen">
       <div className="flex flex-col justify-center content-stretch w-full">
         <div>
           <div className="flex flex-row justify-center content-stretch mb-2">
-            <div className="p-5 rounded-lg bg-gray-50 shadow-md w-6/12">
+            <div className="p-5 rounded-lg bg-gray-50 shadow-md md:w-6/12 sm:w-6/12 lg:w-4/12">
               <h3 className="text-gray-400 font-medium text-sm">
                 CHOOSE CONNECTION
               </h3>
