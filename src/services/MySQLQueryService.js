@@ -11,32 +11,50 @@ export const connection = function (info) {
 
 export const showDatabases = function (connection) {
   return new Promise((res, rej) => {
+    const queryString = `SHOW DATABASES`;
     if (connection) {
       connection.connect();
 
-      connection.query(`SHOW DATABASES`, function (error, results, fields) {
+      connection.query(queryString, function (error, results, fields) {
         if (error) rej(error);
 
-        res(results);
+        res({ data: results, queryString: queryString});
       });
 
       connection.end();
     }
   });
-}
+};
 
 export const showTables = function (connection) {
+  return new Promise((res, rej) => {
+    const queryString = `SHOW TABLES`;
+    if (connection) {
+      connection.connect();
+
+      connection.query(queryString, function (error, results, fields) {
+        if (error) rej(error);
+
+        res({ data: results, queryString: queryString});
+      });
+
+      connection.end();
+    }
+  });
+};
+
+export const queryTable = function (connection, queryString) {
   return new Promise((res, rej) => {
     if (connection) {
       connection.connect();
 
-      connection.query(`SHOW TABLES`, function (error, results, fields) {
+      connection.query(queryString, function (error, results, fields) {
         if (error) rej(error);
 
-        res(results);
+        res({ data: results, queryString: queryString});
       });
 
       connection.end();
     }
   });
-}
+};
