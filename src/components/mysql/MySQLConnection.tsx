@@ -166,8 +166,8 @@ export default function MySQLConnection() {
           <div className="mt-5 overflow-x-auto">
             <table className="table-fixed min-w-full">
               <thead>
-                {state.tableColumns.length > 0 && <tr className="bg-gray-200">
-                  {state.tableColumns.length > 0 && state.tableColumns.map((columnName: { Field: React.ReactNode; }, _id: string) => <th key={_id} className="w-1/12 text-xs p-2">{columnName}</th>)}
+                {state.tableColumns && state.tableColumns.length > 0 && <tr className="bg-gray-200">
+                  {state.tableColumns && state.tableColumns.length > 0 && state.tableColumns.map((columnName: { Field: React.ReactNode; }, _id: string) => <th key={_id} className="w-1/12 text-xs p-2">{columnName}</th>)}
                 </tr>}
               </thead>
               <tbody>
@@ -183,8 +183,8 @@ export default function MySQLConnection() {
                   )
                 })}
 
-                {state.tableContents.length <= 0 && <tr className="text-xs bg-gray-50">
-                  <td colSpan={state.tableColumns.length} className="text-gray-400 justify-center content-center text-center p-2">No data to show</td>
+                {(! state.tableContents || state.tableContents.length <= 0) && <tr className="text-xs bg-gray-50">
+                  <td colSpan={state.tableColumns ? state.tableColumns.length : 0} className="text-gray-400 justify-center content-center text-center p-2">No data to show</td>
                 </tr>}
               </tbody>
             </table>
