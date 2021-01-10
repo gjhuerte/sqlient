@@ -43,18 +43,16 @@ export const showTables = function (connection) {
   });
 };
 
-export const queryTable = function (connection, queryString) {
+export const queryTable = function (connection, queryString, shouldClose = true) {
   return new Promise((res, rej) => {
     if (connection) {
-      connection.connect();
-
       connection.query(queryString, function (error, results, fields) {
         if (error) rej(error);
 
         res({ data: results, queryString: queryString});
       });
 
-      connection.end();
+      if (shouldClose) connection.end();
     }
   });
 };

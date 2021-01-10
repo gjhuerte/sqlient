@@ -69,7 +69,7 @@ export default function MySQLConnection() {
   }
 
   const showTableContent = (tableName: string) => {
-    const tableConnection1 = connection({
+    const _connection = connection({
       host: state.host,
       port: state.port,
       user: state.user,
@@ -77,51 +77,49 @@ export default function MySQLConnection() {
       database: state.database,
     });
 
-    let queryString = `SHOW COLUMNS FROM ${tableName}`;
+    let queryString = `SELECT * FROM ${tableName} LIMIT 20`;
 
-    queryTable(tableConnection1, queryString).then(response => {
-      if (response) {
-        let tableColumns: any[] = [];
-        Object.keys(response.data).map(tableColumn => {
-          if (tableColumn !== 'queryString') {
-            tableColumns.push(response.data[tableColumn]);
-          }
-        });
+    queryTable(_connection, queryString, false).then(response => {
+      if (response.data && response.data.length > 0) {
+        let tableContents = response.data;
+        let tableColumns = Object.keys(response.data[0]);
+
+        console.log({
+          c: tableContents,
+          col: tableColumns,
+        })
 
         setState({
           ...state,
-          tableColumns: tableColumns,
+          tableContents: tableContents,
           queryString: response.queryString,
+          tableColumns: tableColumns,
         });
 
-        const tableConnection2 = connection({
-          host: state.host,
-          port: state.port,
-          user: state.user,
-          password: state.password,
-          database: state.database,
-        });
-
-        queryString = `SELECT * FROM ${tableName} LIMIT 20`;
-
-        queryTable(tableConnection2, queryString).then(response => {
-          if (response) {
-            let tableContents: any[] = [];
-            Object.keys(response.data).map(tableContent => {
-              if (tableContent !== 'queryString') {
-                tableContents.push(response.data[tableContent]);
-              }
-            });
-
-            setState({
-              ...state,
-              tableContents: tableContents,
-              queryString: response.queryString,
-            });
-          }
-        });
+        return;
       }
+
+      queryString = `SHOW COLUMNS FROM ${tableName}`;
+
+      queryTable(_connection, queryString).then(response => {
+        if (response.data) {
+          let tableColumns: any[] = [];
+          Object.keys(response.data).map(tableColumn => {
+            tableColumns.push(response.data[tableColumn].Field);
+          });
+
+          console.log(tableColumns)
+
+          setState({
+            ...state,
+            tableContents: [],
+            tableColumns: tableColumns,
+            queryString: response.queryString,
+          });
+        }
+      });
     });
+
   }
 
   return (
@@ -165,28 +163,29 @@ export default function MySQLConnection() {
           <div className="mb-2">
             <input type="text" placeholder="Your query will appear here..." className="bg-gray-300 text-gray-700 p-2 rounded-md mt-1 focus:outline-none w-full" onChange={e => setState({ ...state, queryString: e.target.value })} value={state.queryString} />
           </div>
-          <div className="mt-5">
-            <table>
+          <div className="mt-5 overflow-x-auto">
+            <table className="table-fixed min-w-full">
               <thead>
-                <tr>
-                  {state.tableColumns.length > 0 && state.tableColumns.map((columnName: { Field: React.ReactNode; }, _id: string) => {
-                    console.log(columnName.Field)
-                    return <th key={_id} className="mb-2 text-xs">{columnName.Field}</th>;
-                  })}
-                </tr>
+                {state.tableColumns.length > 0 && <tr className="bg-gray-200">
+                  {state.tableColumns.length > 0 && state.tableColumns.map((columnName: { Field: React.ReactNode; }, _id: string) => <th key={_id} className="w-1/12 text-xs p-2">{columnName}</th>)}
+                </tr>}
               </thead>
               <tbody>
                 {state.tableContents && state.tableContents.length > 0 && state.tableContents.map((contents: any[], _id: string) => {
                   return (
-                    <tr key={_id} className="mb-2 text-xs">
+                    <tr key={_id} className="text-xs bg-gray-50 hover:bg-gray-100">
                       {Object.keys(contents).map((content, __id) => {
                         const contentString = (contents[content] || '').toString();
                         const str = contentString.length > 50 ? contentString.substr(0, 50) + '...' : contentString;
-                        return <td key={__id}>{str}</td>
+                        return <td key={__id} className="w-1/12 border p-2">{str}</td>
                       })}
                     </tr>
                   )
                 })}
+
+                {state.tableContents.length <= 0 && <tr className="text-xs bg-gray-50">
+                  <td colSpan={state.tableColumns.length} className="text-gray-400 justify-center content-center text-center p-2">No data to show</td>
+                </tr>}
               </tbody>
             </table>
           </div>
